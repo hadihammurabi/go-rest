@@ -2,8 +2,8 @@ package driver
 
 import (
 	"github.com/gowok/gowok/config"
-	"github.com/gowok/gowok/driver/database"
 	"github.com/gowok/ioc"
+	posgtresql "github.com/gowok/postgresql"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 )
@@ -13,13 +13,17 @@ type DB struct {
 }
 
 func Database(conf []config.Database) {
-	var pgdb *database.PostgreSQL
+	var pgdb *posgtresql.PostgreSQL
 
 	for _, dbConf := range conf {
 		var err error
-		pgdb, err = database.NewPostgresql(dbConf)
+		pgdb, err = posgtresql.New(dbConf)
 
 		if err != nil {
+			panic(err)
+		}
+
+		if err := pgdb.Ping(); err != nil {
 			panic(err)
 		}
 

@@ -7,7 +7,6 @@ import (
 
 	"go-rest/driver"
 
-	"github.com/google/uuid"
 	"github.com/gowok/ioc"
 )
 
@@ -26,7 +25,7 @@ func NewToken() *TokenSQL {
 // Create func
 func (r TokenSQL) Create(c context.Context, token *entity.Token) (*entity.Token, error) {
 	tokenTable := table.TokenFromEntity(token)
-	tokenTable.ID = uuid.NewString()
+	// tokenTable.ID = uuid.NewString()
 	_, err := r.db.NewInsert().
 		Model(tokenTable).
 		Exec(c)
