@@ -8,6 +8,7 @@ require (
 	github.com/gowok/gowok v0.2.1
 	github.com/gowok/ioc v0.1.6
 	github.com/gowok/postgresql v0.1.1
+	github.com/gowok/qry v0.0.0-20230324143820-137ee02ab4e1
 	github.com/uptrace/bun v1.1.12
 	github.com/uptrace/bun/dialect/pgdialect v1.1.12
 )

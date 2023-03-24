@@ -6,6 +6,8 @@ import (
 	"github.com/uptrace/bun"
 )
 
+const NameUsers string = "auth.users"
+
 // User model
 type User struct {
 	bun.BaseModel `bun:"table:auth.users"`

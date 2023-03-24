@@ -1,15 +1,15 @@
 package driver
 
 import (
+	"database/sql"
+
 	"github.com/gowok/gowok/config"
 	"github.com/gowok/ioc"
 	posgtresql "github.com/gowok/postgresql"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
 type DB struct {
-	*bun.DB
+	*sql.DB
 }
 
 func Database(conf []config.Database) {
@@ -28,7 +28,7 @@ func Database(conf []config.Database) {
 		}
 
 		if pgdb != nil {
-			db := DB{bun.NewDB(pgdb.DB, pgdialect.New())}
+			db := DB{pgdb.DB}
 			ioc.Set(func() DB { return db })
 		}
 	}

@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const NameTokens string = "auth.tokens"
+
 // Token model
 type Token struct {
 	Base
