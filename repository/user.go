@@ -9,7 +9,6 @@ import (
 
 	"go-rest/driver"
 
-	"github.com/google/uuid"
 	"github.com/gowok/ioc"
 )
 
@@ -62,7 +61,7 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 // Create func
 func (r UserSQL) Create(c context.Context, user *entity.User) (*entity.User, error) {
 	userTable := table.UserFromEntity(user)
-	userTable.ID = uuid.NewString()
+	// userTable.ID = uuid.NewString()
 	_, err := r.db.NewInsert().Model(userTable).Exec(c)
 	if err != nil {
 		return user, err

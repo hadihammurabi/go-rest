@@ -6,7 +6,7 @@ import (
 
 	"go-rest/entity"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 func CreateJWTWithClaims(secret string, claims jwt.Claims) (string, error) {

@@ -8,7 +8,7 @@ import (
 	"go-rest/entity"
 	jwtUtil "go-rest/util/jwt"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/gowok/gowok"
 	"github.com/gowok/ioc"
 )
