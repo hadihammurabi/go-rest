@@ -77,7 +77,7 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 func (r UserSQL) Create(c context.Context, user *entity.User) (*entity.User, error) {
 	q := qry.Insert(table.NameUsers).
 		Column("email", "password").
-		Values("?", "?")
+		Values("?", "$1")
 	_, err := r.db.Exec(q.SQL(), user.Email, user.Password)
 	if err != nil {
 		return user, err
@@ -91,9 +91,13 @@ func (r UserSQL) FindByEmail(c context.Context, email string) (*entity.User, err
 	userTable := table.User{}
 	q := qry.Select("id", "email", "password").
 		From(table.NameUsers).
-		Where("email = ?")
+		Where("email = $1")
 	row := r.db.QueryRow(q.SQL(), email)
-	err := row.Scan(
+	err := row.Err()
+	if err != nil {
+		return nil, err
+	}
+	err = row.Scan(
 		&userTable.ID,
 		&userTable.Email,
 		&userTable.Password,
@@ -110,7 +114,7 @@ func (r UserSQL) FindByID(c context.Context, id string) (*entity.User, error) {
 	userTable := table.User{}
 	q := qry.Select("id", "email", "password").
 		From(table.NameUsers).
-		Where("id = ?")
+		Where("id = $1")
 	row := r.db.QueryRow(q.SQL(), id)
 	err := row.Scan(
 		&userTable.ID,
@@ -135,7 +139,7 @@ func (r UserSQL) ChangePassword(c context.Context, id string, password string) (
 
 	q := qry.Update(table.NameUsers).
 		Set("password", password).
-		Where("id = ?")
+		Where("id = $1")
 
 	_, err = r.db.Exec(q.SQL(), id)
 	if err != nil {

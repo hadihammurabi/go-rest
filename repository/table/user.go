@@ -2,15 +2,12 @@ package table
 
 import (
 	"go-rest/entity"
-
-	"github.com/uptrace/bun"
 )
 
 const NameUsers string = "auth.users"
 
 // User model
 type User struct {
-	bun.BaseModel `bun:"table:auth.users"`
 	Base
 	Email    string `json:"email"`
 	Password string `json:"-"`

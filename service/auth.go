@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"go-rest/entity"
 
@@ -36,6 +37,8 @@ func (a AuthService) Login(c context.Context, userInput *entity.User) (string, e
 	if err != nil {
 		return "", errors.New("email or password invalid")
 	}
+
+	fmt.Println(user)
 
 	isPasswordValid := hash.PasswordVerify(userInput.Password, user.Password, a.config.App.Key)
 	if isPasswordValid {

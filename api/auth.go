@@ -57,5 +57,5 @@ func (api Auth) Login(c *fiber.Ctx) error {
 // Me func
 func (api Auth) Me(c *fiber.Ctx) error {
 	fromLocals := c.Locals("user").(*entity.User)
-	return Ok(c, fromLocals)
+	return Ok(c, *fromLocals)
 }

@@ -16,6 +16,7 @@ import (
 // Here, we can set route or just invoke another func to do modular route.
 func (api *APIRest) ConfigureRoute() {
 	api.HTTP.Mount("/", NewIndex())
+	api.HTTP.Mount("/auth", NewAuth())
 	api.HTTP.Mount("/users", NewUser())
 }
 
