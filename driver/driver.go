@@ -8,4 +8,5 @@ func PrepareAll() {
 	conf, _ := Config()
 	Database(conf.Databases)
 	Validator()
+	NewRBAC()
 }

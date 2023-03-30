@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"go-rest/driver"
 	"go-rest/repository"
 
 	"go-rest/api/dto"
@@ -16,6 +17,7 @@ import (
 type UserService struct {
 	UserRepo UserRepo
 	config   *gowok.Config
+	rbac     *driver.RBAC
 }
 
 // NewUserService func
@@ -23,6 +25,7 @@ func NewUserService() UserService {
 	return UserService{
 		UserRepo: ioc.MustGet(repository.UserSQL{}),
 		config:   ioc.MustGet(gowok.Config{}),
+		rbac:     ioc.MustGet(driver.RBAC{}),
 	}
 }
 
@@ -45,6 +48,8 @@ func (u UserService) Create(c context.Context, user *entity.User) (*entity.User,
 	if err != nil {
 		return nil, err
 	}
+
+	u.rbac.AddGroupingPolicy(user.ID, "staff")
 
 	return userFromTable, nil
 }

@@ -51,7 +51,7 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 	}
 
 	q = q.Limit(int(pagination.Perpage)).
-		Offset(int(pagination.Page))
+		Offset(int((pagination.Page * pagination.Perpage) - pagination.Perpage))
 
 	rows, err := r.db.Query(q.SQL())
 	if err != nil {
@@ -77,8 +77,11 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 func (r UserSQL) Create(c context.Context, user *entity.User) (*entity.User, error) {
 	q := qry.Insert(table.NameUsers).
 		Column("email", "password").
-		Values("?", "$1")
-	_, err := r.db.Exec(q.SQL(), user.Email, user.Password)
+		Values("$1", "$2").
+		Suffix("RETURNING id")
+	row := r.db.QueryRow(q.SQL(), user.Email, user.Password)
+
+	err := row.Scan(&user.ID)
 	if err != nil {
 		return user, err
 	}

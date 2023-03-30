@@ -18,6 +18,7 @@ func (api *APIRest) ConfigureRoute() {
 	api.HTTP.Mount("/", NewIndex())
 	api.HTTP.Mount("/auth", NewAuth())
 	api.HTTP.Mount("/users", NewUser())
+	api.HTTP.Mount("/policies", NewPolicy())
 }
 
 // APIRest struct

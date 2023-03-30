@@ -3,6 +3,7 @@ package api
 import (
 	"go-rest/api/dto"
 	"go-rest/api/middleware"
+	"go-rest/driver"
 	"go-rest/service"
 
 	"go-rest/entity"
@@ -25,9 +26,22 @@ func NewUser() *fiber.App {
 	}
 
 	router := fiber.New()
-	router.Get("", api.Middlewares.Pagination, api.UserGetAll)
-	router.Post("", api.UserCreate)
-	router.Put(":id", api.UserUpdateByID)
+	router.Get("",
+		api.Middlewares.AuthBearer,
+		api.Middlewares.RBAC("users", driver.RBACRead),
+		api.Middlewares.Pagination,
+		api.UserGetAll,
+	)
+	router.Post("",
+		api.Middlewares.AuthBearer,
+		api.Middlewares.RBAC("users", driver.RBACCreate),
+		api.UserCreate,
+	)
+	router.Put(":id",
+		api.Middlewares.AuthBearer,
+		api.Middlewares.RBAC("users", driver.RBACUpdate),
+		api.UserUpdateByID,
+	)
 
 	return router
 }
