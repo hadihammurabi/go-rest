@@ -29,6 +29,11 @@ func Fail(c *fiber.Ctx, errs any, status ...int) error {
 		s = status[0]
 	}
 
+	switch errs.(type) {
+	case error:
+		errs = errs.(error).Error()
+	}
+
 	return c.Status(s).JSON(FailResponse{
 		Status: ResponseStatusFail,
 		Errors: errs,

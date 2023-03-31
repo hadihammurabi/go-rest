@@ -6,36 +6,35 @@ import (
 	"go-rest/service"
 
 	"github.com/gowok/ioc"
-	"golang.org/x/exp/slices"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type Policy struct {
-	Middlewares *middleware.Middlewares
-	AuthService AuthService
-	rbac        *driver.RBAC
+	Middlewares   *middleware.Middlewares
+	AuthService   AuthService
+	PolicyService PolicyService
 }
 
 // NewPolicy func
 func NewPolicy() *fiber.App {
 	api := Policy{
-		Middlewares: ioc.MustGet(middleware.Middlewares{}),
-		AuthService: ioc.MustGet(service.AuthService{}),
-		rbac:        ioc.MustGet(driver.RBAC{}),
+		Middlewares:   ioc.MustGet(middleware.Middlewares{}),
+		AuthService:   ioc.MustGet(service.AuthService{}),
+		PolicyService: ioc.MustGet(service.PolicyService{}),
 	}
 
 	router := fiber.New()
+	router.Post("",
+		api.Middlewares.AuthBearer,
+		api.Middlewares.RBAC("policies", driver.RBACCreate),
+		api.AddPolicy,
+	)
 	router.Get("roles",
 		api.Middlewares.AuthBearer,
 		api.Middlewares.RBAC("policies", driver.RBACRead),
 		api.Middlewares.Pagination,
 		api.GetAllRoles,
-	)
-	router.Post("",
-		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("policies", driver.RBACCreate),
-		api.AddPolicy,
 	)
 	router.Delete("roles/:name",
 		api.Middlewares.AuthBearer,
@@ -48,7 +47,7 @@ func NewPolicy() *fiber.App {
 
 // GetAllRoles func
 func (api Policy) GetAllRoles(c *fiber.Ctx) error {
-	return Ok(c, api.rbac.GetAllRoles())
+	return Ok(c, api.PolicyService.GetAllRoles(c.Context()))
 }
 
 // // Login func
@@ -58,15 +57,7 @@ func (api Policy) AddPolicy(c *fiber.Ctx) error {
 		return Fail(c, err)
 	}
 
-	if len(input) < 3 {
-		return Fail(c, "invalid policy data")
-	}
-
-	if !slices.Contains(driver.RBACAll, input[2].(string)) {
-		return Fail(c, "invalid policy data")
-	}
-
-	_, err := api.rbac.AddPolicy(input...)
+	err := api.PolicyService.AddPolicy(c.Context(), input)
 	if err != nil {
 		return Fail(c, err)
 	}
@@ -77,7 +68,7 @@ func (api Policy) AddPolicy(c *fiber.Ctx) error {
 // DeleteRole func
 func (api Policy) DeleteRole(c *fiber.Ctx) error {
 	name := c.Params("name")
-	_, err := api.rbac.DeleteRole(name)
+	err := api.PolicyService.DeleteRole(c.Context(), name)
 	if err != nil {
 		return Fail(c, err)
 	}

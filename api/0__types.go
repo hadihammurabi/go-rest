@@ -18,3 +18,9 @@ type UserService interface {
 	FindByID(c context.Context, id string) (*entity.User, error)
 	ChangePassword(c context.Context, id string, password string) (*entity.User, error)
 }
+
+type PolicyService interface {
+	GetAllRoles(context.Context) []string
+	AddPolicy(c context.Context, input []any) error
+	DeleteRole(c context.Context, name string) error
+}
