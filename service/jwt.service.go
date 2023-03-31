@@ -23,7 +23,7 @@ type JWTService struct {
 
 // NewJWTService func
 func NewJWTService() JWTService {
-	config := ioc.Get(gowok.Config{})
+	config := ioc.MustGet(gowok.Config{})
 
 	return JWTService{
 		Config:       config,

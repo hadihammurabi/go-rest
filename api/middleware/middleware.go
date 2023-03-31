@@ -19,7 +19,7 @@ func NewMiddleware(config *gowok.Config, service *service.Service) Middlewares {
 	middlewares := Middlewares{
 		config:  config,
 		service: service,
-		pol:     ioc.Get(policy.Policy{}),
+		pol:     ioc.MustGet(policy.Policy{}),
 	}
 
 	ioc.Set(func() Middlewares { return middlewares })

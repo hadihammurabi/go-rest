@@ -21,7 +21,7 @@ type UserSQL struct {
 // NewUser func
 func NewUser() *UserSQL {
 	return &UserSQL{
-		db: ioc.Get(driver.DB{}),
+		db: ioc.MustGet(driver.DB{}),
 	}
 }
 

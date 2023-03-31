@@ -19,7 +19,7 @@ type TokenSQL struct {
 // NewToken func
 func NewToken() *TokenSQL {
 	return &TokenSQL{
-		db: ioc.Get(driver.DB{}),
+		db: ioc.MustGet(driver.DB{}),
 	}
 }
 

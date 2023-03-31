@@ -21,7 +21,7 @@ type AuthService struct {
 
 // NewAuthService func
 func NewAuthService() AuthService {
-	config := ioc.Get(gowok.Config{})
+	config := ioc.MustGet(gowok.Config{})
 	return AuthService{
 		userService:  NewUserService(),
 		tokenService: NewTokenService(),
