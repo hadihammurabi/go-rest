@@ -3,7 +3,7 @@ package driver
 import (
 	"database/sql"
 
-	"github.com/gowok/gowok/config"
+	"github.com/gowok/gowok"
 	"github.com/gowok/ioc"
 	posgtresql "github.com/gowok/postgresql"
 )
@@ -12,10 +12,11 @@ type DB struct {
 	*sql.DB
 }
 
-func Database(conf []config.Database) {
+func initDatabase() {
+	conf := ioc.MustGet(gowok.Config{})
 	var pgdb *posgtresql.PostgreSQL
 
-	for _, dbConf := range conf {
+	for _, dbConf := range conf.Databases {
 		var err error
 		pgdb, err = posgtresql.New(dbConf)
 

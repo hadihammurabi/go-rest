@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"go-rest/driver"
 	"go-rest/repository"
 
@@ -41,6 +43,15 @@ func (u UserService) All(c context.Context, pagination dto.PaginationReq) (res d
 
 // Create func
 func (u UserService) Create(c context.Context, user *entity.User) (*entity.User, error) {
+	isEmailExists, err := u.IsEmailUsed(c, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmailExists {
+		return nil, errors.New("email already used")
+	}
+
 	pass := hash.PasswordHash(user.Password, u.config.App.Key)
 	user.Password = pass.Hashed
 
@@ -52,6 +63,19 @@ func (u UserService) Create(c context.Context, user *entity.User) (*entity.User,
 	u.rbac.AddGroupingPolicy(user.ID, "staff")
 
 	return userFromTable, nil
+}
+
+func (u UserService) IsEmailUsed(c context.Context, email string) (bool, error) {
+	_, err := u.FindByEmail(c, email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		} else {
+			return false, err
+		}
+	}
+
+	return true, nil
 }
 
 // FindByEmail func

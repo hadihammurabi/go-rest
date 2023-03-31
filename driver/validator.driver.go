@@ -5,7 +5,7 @@ import (
 	"github.com/gowok/ioc"
 )
 
-func Validator() {
+func initValidator() {
 	v := gowok.NewValidator()
 	ioc.Set(func() gowok.Validator { return *v })
 }

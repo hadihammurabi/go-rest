@@ -1,12 +1,9 @@
 package driver
 
-import "go-rest/util/runner"
-
-func PrepareAll() {
-	runner.PrepareRuntime()
-
-	conf, _ := Config()
-	Database(conf.Databases)
-	Validator()
-	NewRBAC()
+func Init() {
+	initRuntime()
+	initConfig()
+	initDatabase()
+	initValidator()
+	initRBAC()
 }

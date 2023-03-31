@@ -67,13 +67,15 @@ func NewRBAC() (*RBAC, error) {
 	e.AddPolicy("superuser", "users", RBACDelete)
 	e.AddGroupingPolicy("root", "superuser")
 
-	// err = e.SavePolicy()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	ee := &RBAC{e}
-	ioc.Set(func() RBAC { return *ee })
-
 	return ee, nil
+}
+
+func initRBAC() {
+	rbac, err := NewRBAC()
+	if err != nil {
+		panic(err)
+	}
+	ioc.Set(func() RBAC { return *rbac })
+
 }

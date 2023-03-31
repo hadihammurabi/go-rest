@@ -1,11 +1,11 @@
-package runner
+package driver
 
 import (
 	"runtime"
 	"syscall"
 )
 
-func PrepareRuntime() {
+func initRuntime() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	var rLimit syscall.Rlimit
 	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {

@@ -33,9 +33,9 @@ type APIRest struct {
 func NewAPIRest() *APIRest {
 	api := &APIRest{
 		HTTP:      driver.NewAPI(),
-		Config:    ioc.Get(gowok.Config{}),
-		Validator: ioc.Get(gowok.Validator{}),
-		Service:   service.New(),
+		Config:    ioc.MustGet(gowok.Config{}),
+		Validator: ioc.MustGet(gowok.Validator{}),
+		Service:   ioc.MustGet(service.Service{}),
 	}
 	api.ConfigureMiddleware()
 	api.ConfigureRoute()

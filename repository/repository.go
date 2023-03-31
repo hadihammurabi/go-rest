@@ -12,20 +12,19 @@ type Repository struct {
 
 // NewRepository func
 func NewRepository() Repository {
-	user := NewUser()
-	token := NewToken()
-
-	ioc.Set(func() UserSQL { return *user })
-	ioc.Set(func() TokenSQL { return *token })
-
 	repo := Repository{
-		User:  user,
-		Token: token,
+		User:  NewUser(),
+		Token: NewToken(),
 	}
 
+	return repo
+}
+
+func Init() {
+	repo := NewRepository()
+	ioc.Set(func() UserSQL { return *repo.User })
+	ioc.Set(func() TokenSQL { return *repo.Token })
 	ioc.Set(func() Repository {
 		return repo
 	})
-
-	return repo
 }

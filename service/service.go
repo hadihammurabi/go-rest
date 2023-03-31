@@ -9,17 +9,18 @@ type Service struct {
 }
 
 func New() *Service {
-	auth := NewAuthService()
-	user := NewUserService()
-	token := NewTokenService()
-
-	ioc.Set(func() AuthService { return auth })
-	ioc.Set(func() UserService { return user })
-	ioc.Set(func() TokenService { return token })
-
 	return &Service{
-		Auth:  auth,
-		User:  user,
-		Token: token,
+		Auth:  NewAuthService(),
+		User:  NewUserService(),
+		Token: NewTokenService(),
 	}
+}
+
+func Init() {
+	sv := New()
+
+	ioc.Set(func() Service { return *sv })
+	ioc.Set(func() AuthService { return sv.Auth })
+	ioc.Set(func() UserService { return sv.User })
+	ioc.Set(func() TokenService { return sv.Token })
 }
