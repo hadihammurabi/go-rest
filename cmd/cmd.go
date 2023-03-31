@@ -15,13 +15,14 @@ func init() {
 }
 
 func New() *cobra.Command {
+	cr := cmdRun()
 	cmd := &cobra.Command{
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+			cr.Run(cmd, args)
 		},
 	}
 
-	cmd.AddCommand(cmdRun())
+	cmd.AddCommand(cr)
 	cmd.AddCommand(cmdSeed())
 
 	return cmd
