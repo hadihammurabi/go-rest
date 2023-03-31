@@ -4,27 +4,26 @@ import (
 	"context"
 	"errors"
 
-	"go-rest/driver"
-
+	"github.com/gowok/gowok/policy"
 	"github.com/gowok/ioc"
 	"golang.org/x/exp/slices"
 )
 
 // PolicyService struct
 type PolicyService struct {
-	rbac *driver.RBAC
+	pol *policy.Policy
 }
 
 // NewPolicyService func
 func NewPolicyService() PolicyService {
 	return PolicyService{
-		rbac: ioc.MustGet(driver.RBAC{}),
+		pol: ioc.MustGet(policy.Policy{}),
 	}
 }
 
 // GetAllRoles func
 func (u PolicyService) GetAllRoles(context.Context) []string {
-	return u.rbac.GetAllRoles()
+	return u.pol.GetAllRoles()
 }
 
 // AddPolicy func
@@ -38,7 +37,7 @@ func (u PolicyService) AddPolicy(c context.Context, input []any) error {
 			return errors.New("invalid policy data")
 		}
 
-		_, err := u.rbac.AddGroupingPolicy(input[1:]...)
+		_, err := u.pol.AddGroupingPolicy(input[1:]...)
 		if err != nil {
 			return err
 		}
@@ -46,11 +45,11 @@ func (u PolicyService) AddPolicy(c context.Context, input []any) error {
 		return nil
 	}
 
-	if input[0] != "p" || !slices.Contains(driver.RBACAll, input[3].(string)) {
+	if input[0] != "p" || !slices.Contains(policy.Actions, input[3].(string)) {
 		return errors.New("invalid policy data")
 	}
 
-	_, err := u.rbac.AddPolicy(input[1:]...)
+	_, err := u.pol.AddPolicy(input[1:]...)
 	if err != nil {
 		return err
 	}
@@ -59,7 +58,7 @@ func (u PolicyService) AddPolicy(c context.Context, input []any) error {
 }
 
 func (u PolicyService) DeleteRole(c context.Context, name string) error {
-	users, err := u.rbac.GetUsersForRole(name)
+	users, err := u.pol.GetUsersForRole(name)
 	if err != nil {
 		return err
 	}
@@ -68,7 +67,7 @@ func (u PolicyService) DeleteRole(c context.Context, name string) error {
 		return errors.New("can't delete role with some users")
 	}
 
-	_, err = u.rbac.DeleteRole(name)
+	_, err = u.pol.DeleteRole(name)
 	if err != nil {
 		return err
 	}

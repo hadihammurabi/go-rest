@@ -7,7 +7,7 @@ require (
 	github.com/casbin/casbin/v2 v2.66.0
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/gowok/gowok v0.2.1
+	github.com/gowok/gowok v0.2.2
 	github.com/gowok/ioc v0.1.6
 	github.com/gowok/postgresql v0.1.1
 	github.com/gowok/qry v0.0.0-20230324143820-137ee02ab4e1

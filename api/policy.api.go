@@ -2,9 +2,9 @@ package api
 
 import (
 	"go-rest/api/middleware"
-	"go-rest/driver"
 	"go-rest/service"
 
+	"github.com/gowok/gowok/policy"
 	"github.com/gowok/ioc"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,18 +27,18 @@ func NewPolicy() *fiber.App {
 	router := fiber.New()
 	router.Post("",
 		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("policies", driver.RBACCreate),
+		api.Middlewares.Can(policy.ActionCreate, "policies"),
 		api.AddPolicy,
 	)
 	router.Get("roles",
 		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("policies", driver.RBACRead),
+		api.Middlewares.Can(policy.ActionRead, "policies"),
 		api.Middlewares.Pagination,
 		api.GetAllRoles,
 	)
 	router.Delete("roles/:name",
 		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("policies", driver.RBACDelete),
+		api.Middlewares.Can(policy.ActionDelete, "policies"),
 		api.DeleteRole,
 	)
 

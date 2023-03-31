@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// RBAC func
-func (m Middlewares) RBAC(obj, act string) fiber.Handler {
+// Can func
+func (m Middlewares) Can(act, obj string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userFromLocals := c.Locals("user")
 		if userFromLocals == nil {
@@ -20,9 +20,9 @@ func (m Middlewares) RBAC(obj, act string) fiber.Handler {
 		var allowed bool
 		var err error
 		if user.Email == "root" {
-			allowed, err = m.rbac.Enforce(user.Email, obj, act)
+			allowed, err = m.pol.Enforce(user.Email, obj, act)
 		} else {
-			allowed, err = m.rbac.Enforce(user.ID, obj, act)
+			allowed, err = m.pol.Enforce(user.ID, obj, act)
 		}
 
 		if err != nil || !allowed {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"go-rest/driver"
 	"go-rest/repository"
 
 	"go-rest/api/dto"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/gowok/gowok"
 	"github.com/gowok/gowok/hash"
+	"github.com/gowok/gowok/policy"
 	"github.com/gowok/ioc"
 )
 
@@ -19,7 +19,7 @@ import (
 type UserService struct {
 	UserRepo UserRepo
 	config   *gowok.Config
-	rbac     *driver.RBAC
+	pol      *policy.Policy
 }
 
 // NewUserService func
@@ -27,7 +27,7 @@ func NewUserService() UserService {
 	return UserService{
 		UserRepo: ioc.MustGet(repository.UserSQL{}),
 		config:   ioc.MustGet(gowok.Config{}),
-		rbac:     ioc.MustGet(driver.RBAC{}),
+		pol:      ioc.MustGet(policy.Policy{}),
 	}
 }
 
@@ -60,7 +60,7 @@ func (u UserService) Create(c context.Context, user *entity.User) (*entity.User,
 		return nil, err
 	}
 
-	u.rbac.AddGroupingPolicy(user.ID, "staff")
+	u.pol.AddGroupingPolicy(user.ID, "staff")
 
 	return userFromTable, nil
 }

@@ -5,5 +5,5 @@ func Init() {
 	initConfig()
 	initDatabase()
 	initValidator()
-	initRBAC()
+	initPolicy()
 }

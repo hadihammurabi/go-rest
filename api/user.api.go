@@ -3,11 +3,11 @@ package api
 import (
 	"go-rest/api/dto"
 	"go-rest/api/middleware"
-	"go-rest/driver"
 	"go-rest/service"
 
 	"go-rest/entity"
 
+	"github.com/gowok/gowok/policy"
 	"github.com/gowok/ioc"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,18 +28,18 @@ func NewUser() *fiber.App {
 	router := fiber.New()
 	router.Get("",
 		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("users", driver.RBACRead),
+		api.Middlewares.Can(policy.ActionRead, "users"),
 		api.Middlewares.Pagination,
 		api.UserGetAll,
 	)
 	router.Post("",
 		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("users", driver.RBACCreate),
+		api.Middlewares.Can(policy.ActionCreate, "users"),
 		api.UserCreate,
 	)
 	router.Put(":id",
 		api.Middlewares.AuthBearer,
-		api.Middlewares.RBAC("users", driver.RBACUpdate),
+		api.Middlewares.Can(policy.ActionUpdate, "users"),
 		api.UserUpdateByID,
 	)
 

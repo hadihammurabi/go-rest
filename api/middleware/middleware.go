@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"go-rest/driver"
 	"go-rest/service"
 
 	"github.com/gowok/gowok"
+	"github.com/gowok/gowok/policy"
 	"github.com/gowok/ioc"
 )
 
@@ -12,14 +12,14 @@ import (
 type Middlewares struct {
 	config  *gowok.Config
 	service *service.Service
-	rbac    *driver.RBAC
+	pol     *policy.Policy
 }
 
 func NewMiddleware(config *gowok.Config, service *service.Service) Middlewares {
 	middlewares := Middlewares{
 		config:  config,
 		service: service,
-		rbac:    ioc.Get(driver.RBAC{}),
+		pol:     ioc.Get(policy.Policy{}),
 	}
 
 	ioc.Set(func() Middlewares { return middlewares })
