@@ -13,7 +13,6 @@ func cmdRun() *cobra.Command {
 		Short: "run app",
 		Run: func(cmd *cobra.Command, args []string) {
 			go api.Run()
-			go gowok.StartPProf()
 			gowok.GracefulStop(func() {
 				println()
 				println("Stopping...")
