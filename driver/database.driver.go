@@ -1,37 +1,18 @@
 package driver
 
 import (
-	"database/sql"
-
 	"github.com/gowok/gowok"
-	"github.com/gowok/ioc"
-	posgtresql "github.com/gowok/postgresql"
+	"github.com/gowok/gowok/exception"
+	"gorm.io/gorm"
 )
 
-type DB struct {
-	*sql.DB
-}
+var sql gowok.SQL
 
-func initDatabase() {
-	conf := ioc.MustGet(gowok.Config{})
-	var pgdb *posgtresql.PostgreSQL
-
-	for _, dbConf := range conf.Databases {
-		var err error
-		pgdb, err = posgtresql.New(dbConf)
-
-		if err != nil {
-			panic(err)
-		}
-
-		if err := pgdb.Ping(); err != nil {
-			panic(err)
-		}
-
-		if pgdb != nil {
-			db := DB{pgdb.DB}
-			ioc.Set(func() DB { return db })
-		}
+func GetSQL(name ...string) *gorm.DB {
+	if sql != nil {
+		return sql.Get(name...).OrPanic(exception.ErrNoDatabaseFound)
 	}
 
+	sql = gowok.Must(gowok.NewSQL(GetConfig().Databases))
+	return sql.Get(name...).OrPanic(exception.ErrNoDatabaseFound)
 }
