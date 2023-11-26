@@ -28,7 +28,12 @@ func NewPolicy() (*policy.Policy, error) {
 		return nil, err
 	}
 
-	a, err := sqladapter.NewAdapter(ioc.MustGet(DB{}).DB, "postgres", "policies")
+	db, err := GetSQL().DB()
+	if err != nil {
+		return nil, err
+	}
+
+	a, err := sqladapter.NewAdapter(db, "postgres", "policies")
 	if err != nil {
 		return nil, err
 	}
