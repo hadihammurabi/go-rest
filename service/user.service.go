@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"go-rest/driver"
 	"go-rest/repository"
 
 	"go-rest/api/dto"
@@ -26,7 +27,7 @@ type UserService struct {
 func NewUserService() UserService {
 	return UserService{
 		UserRepo: ioc.MustGet(repository.UserSQL{}),
-		config:   ioc.MustGet(gowok.Config{}),
+		config:   driver.GetConfig(),
 		pol:      ioc.MustGet(policy.Policy{}),
 	}
 }

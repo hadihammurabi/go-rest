@@ -33,7 +33,7 @@ type APIRest struct {
 func NewAPIRest() *APIRest {
 	api := &APIRest{
 		HTTP:      driver.NewAPI(),
-		Config:    ioc.MustGet(gowok.Config{}),
+		Config:    driver.GetConfig(),
 		Validator: ioc.MustGet(gowok.Validator{}),
 		Service:   ioc.MustGet(service.Service{}),
 	}
@@ -51,8 +51,8 @@ func (api *APIRest) ConfigureMiddleware() {
 }
 
 func (d *APIRest) Run() {
-	log.Println("API REST started at", d.Config.App.Rest.Host)
-	if err := d.HTTP.Listen(d.Config.App.Rest.Host); err != nil {
+	log.Println("API REST started at", d.Config.App.Web.Host)
+	if err := d.HTTP.Listen(d.Config.App.Web.Host); err != nil {
 		log.Printf("Server is not running! Reason: %v", err)
 	}
 }

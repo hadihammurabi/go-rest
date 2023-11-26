@@ -1,12 +1,13 @@
 package driver
 
 import (
+	"os"
+
 	"github.com/gowok/gowok"
-	"github.com/gowok/ioc"
 )
 
-func NewConfig() (gowok.Config, error) {
-	conf, err := gowok.Configure("config.yaml")
+func NewConfig() (*gowok.Config, error) {
+	conf, err := gowok.NewConfig(os.OpenFile("config.yaml", os.O_RDONLY, 0666))
 	if err != nil {
 		panic(err)
 	}
@@ -14,11 +15,13 @@ func NewConfig() (gowok.Config, error) {
 	return conf, err
 }
 
-func initConfig() {
-	conf, err := NewConfig()
-	if err != nil {
-		panic(err)
+var conf *gowok.Config
+
+func GetConfig() *gowok.Config {
+	if conf != nil {
+		return conf
 	}
 
-	ioc.Set(func() gowok.Config { return conf })
+	conf = gowok.Must(NewConfig())
+	return conf
 }

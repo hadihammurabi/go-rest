@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"go-rest/driver"
 	"go-rest/entity"
 
 	"github.com/gowok/gowok"
 	"github.com/gowok/gowok/hash"
-	"github.com/gowok/ioc"
 )
 
 // AuthService struct
@@ -21,12 +21,11 @@ type AuthService struct {
 
 // NewAuthService func
 func NewAuthService() AuthService {
-	config := ioc.MustGet(gowok.Config{})
 	return AuthService{
 		userService:  NewUserService(),
 		tokenService: NewTokenService(),
 		jwtService:   NewJWTService(),
-		config:       config,
+		config:       driver.GetConfig(),
 	}
 }
 

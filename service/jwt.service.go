@@ -5,12 +5,12 @@ import (
 	"errors"
 	"time"
 
+	"go-rest/driver"
 	"go-rest/entity"
 	jwtUtil "go-rest/util/jwt"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/gowok/gowok"
-	"github.com/gowok/ioc"
 )
 
 // JWTService struct
@@ -23,10 +23,8 @@ type JWTService struct {
 
 // NewJWTService func
 func NewJWTService() JWTService {
-	config := ioc.MustGet(gowok.Config{})
-
 	return JWTService{
-		Config:       config,
+		Config:       driver.GetConfig(),
 		UserService:  NewUserService(),
 		TokenService: NewTokenService(),
 		// Cache:        config.Redis,
