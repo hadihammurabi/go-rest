@@ -7,29 +7,29 @@ import (
 
 	"go-rest/driver"
 
-	"github.com/gowok/ioc"
 	"github.com/gowok/qry"
+	"gorm.io/gorm"
 )
 
 // TokenSQL struct
 type TokenSQL struct {
-	db *driver.DB
+	db *gorm.DB
 }
 
 // NewToken func
 func NewToken() *TokenSQL {
 	return &TokenSQL{
-		db: ioc.MustGet(driver.DB{}),
+		db: driver.GetSQL(),
 	}
 }
 
 // Create func
 func (r TokenSQL) Create(c context.Context, token *entity.Token) (*entity.Token, error) {
-	q := qry.Insert(table.NameTokens).
-		Column("user_id", "token", "expired_at").
-		Values("?", "?", "?")
+	q := qry.Insert(table.NameTokens)
+	q.Column("user_id", "token", "expired_at")
+	q.Values("?", "?", "?")
 
-	_, err := r.db.Exec(q.SQL(), token.UserID, token.Token, token.ExpiredAt)
+	err := r.db.Exec(q.SQL(), token.UserID, token.Token, token.ExpiredAt).Error
 	if err != nil {
 		return token, err
 	}
@@ -39,34 +39,20 @@ func (r TokenSQL) Create(c context.Context, token *entity.Token) (*entity.Token,
 
 // FindByUserID func
 func (r TokenSQL) FindByUserID(c context.Context, id string) (*entity.Token, error) {
+	tokenTable := table.Token{}
 	q := qry.Select("user_id", "token", "expired_at").
 		From(table.NameTokens).
 		Where("user_id = ?")
-	row := r.db.QueryRow(q.SQL(), id)
-
-	tokenTable := table.Token{}
-	err := row.Scan(
-		&tokenTable.UserID,
-		&tokenTable.Token,
-		&tokenTable.ExpiredAt,
-	)
-
+	err := r.db.Raw(q.SQL(), id).Scan(&tokenTable).Error
 	return tokenTable.ToEntity(), err
 }
 
 // FindByToken func
 func (r TokenSQL) FindByToken(c context.Context, token string) (*entity.Token, error) {
+	tokenTable := table.Token{}
 	q := qry.Select("user_id", "token", "expired_at").
 		From(table.NameTokens).
 		Where("token = ?")
-	row := r.db.QueryRow(q.SQL(), token)
-
-	tokenTable := table.Token{}
-	err := row.Scan(
-		&tokenTable.UserID,
-		&tokenTable.Token,
-		&tokenTable.ExpiredAt,
-	)
-
+	err := r.db.Raw(q.SQL(), token).Scan(&tokenTable).Error
 	return tokenTable.ToEntity(), err
 }

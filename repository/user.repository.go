@@ -9,19 +9,19 @@ import (
 
 	"go-rest/driver"
 
-	"github.com/gowok/ioc"
 	"github.com/gowok/qry"
+	"gorm.io/gorm"
 )
 
 // UserSQL struct
 type UserSQL struct {
-	db *driver.DB
+	db *gorm.DB
 }
 
 // NewUser func
 func NewUser() *UserSQL {
 	return &UserSQL{
-		db: ioc.MustGet(driver.DB{}),
+		db: driver.GetSQL(),
 	}
 }
 
@@ -44,8 +44,8 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 
 	qCount := qry.Select("COUNT(datum.id)").
 		From("(" + q.SQL() + ") datum").SQL()
-	row := r.db.QueryRow(qCount)
-	err := row.Scan(&res.Count)
+	row := r.db.Raw(qCount)
+	err := row.Scan(&res.Count).Error
 	if err != nil {
 		return res, err
 	}
@@ -53,21 +53,9 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 	q = q.Limit(int(pagination.Perpage)).
 		Offset(int((pagination.Page * pagination.Perpage) - pagination.Perpage))
 
-	rows, err := r.db.Query(q.SQL())
+	err = r.db.Raw(q.SQL()).Scan(&res.Items).Error
 	if err != nil {
 		return res, err
-	}
-
-	res.Items = make([]entity.User, 0)
-	for rows.Next() {
-		userTable := table.User{}
-		rows.Scan(
-			&userTable.ID,
-			&userTable.Email,
-			&userTable.Password,
-		)
-
-		res.Items = append(res.Items, *userTable.ToEntity())
 	}
 
 	return res, nil
@@ -75,13 +63,12 @@ func (r UserSQL) All(c context.Context, pagination dto.PaginationReq) (dto.Pagin
 
 // Create func
 func (r UserSQL) Create(c context.Context, user *entity.User) (*entity.User, error) {
-	q := qry.Insert(table.NameUsers).
-		Column("email", "password").
-		Values("$1", "$2").
-		Suffix("RETURNING id")
-	row := r.db.QueryRow(q.SQL(), user.Email, user.Password)
+	q := qry.Insert(table.NameUsers)
+	q.Column("email", "password")
+	q.Values("$1", "$2")
+	q.Suffix("RETURNING id")
 
-	err := row.Scan(&user.ID)
+	err := r.db.Raw(q.SQL(), user.Email, user.Password).Scan(&user.ID).Error
 	if err != nil {
 		return user, err
 	}
@@ -95,16 +82,7 @@ func (r UserSQL) FindByEmail(c context.Context, email string) (*entity.User, err
 	q := qry.Select("id", "email", "password").
 		From(table.NameUsers).
 		Where("email = $1")
-	row := r.db.QueryRow(q.SQL(), email)
-	err := row.Err()
-	if err != nil {
-		return nil, err
-	}
-	err = row.Scan(
-		&userTable.ID,
-		&userTable.Email,
-		&userTable.Password,
-	)
+	err := r.db.Raw(q.SQL(), email).Scan(&userTable).Error
 	if err != nil {
 		return nil, err
 	}
@@ -118,12 +96,7 @@ func (r UserSQL) FindByID(c context.Context, id string) (*entity.User, error) {
 	q := qry.Select("id", "email", "password").
 		From(table.NameUsers).
 		Where("id = $1")
-	row := r.db.QueryRow(q.SQL(), id)
-	err := row.Scan(
-		&userTable.ID,
-		&userTable.Email,
-		&userTable.Password,
-	)
+	err := r.db.Raw(q.SQL(), id).Scan(&userTable).Error
 	if err != nil {
 		return nil, err
 	}
@@ -140,11 +113,11 @@ func (r UserSQL) ChangePassword(c context.Context, id string, password string) (
 
 	userTable := table.UserFromEntity(user)
 
-	q := qry.Update(table.NameUsers).
-		Set("password", password).
-		Where("id = $1")
+	q := qry.Update(table.NameUsers)
+	q.Set("password", password)
+	q.Where("id = $1")
 
-	_, err = r.db.Exec(q.SQL(), id)
+	err = r.db.Exec(q.SQL(), id).Error
 	if err != nil {
 		return user, err
 	}
