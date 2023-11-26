@@ -8,14 +8,14 @@
       "name": "Run",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      // "mode": "launch",
       "program": "${workspaceFolder}"
     },
     {
       "name": "Seed",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      // "mode": "launch",
       "program": "${workspaceFolder}",
       "args": ["seed"]
     }
